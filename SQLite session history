@@ -1,0 +1,432 @@
+chelseaschmidt@Chelseas-MacBook-Air ghrsea10-sqool % which sqlite3
+/usr/bin/sqlite3
+chelseaschmidt@Chelseas-MacBook-Air ghrsea10-sqool % sqlite3 school.db
+SQLite version 3.28.0 2019-04-15 14:49:49
+Enter ".help" for usage hints.
+sqlite> .table
+classes           departments       teachers        
+classes_students  students        
+sqlite> ^D
+chelseaschmidt@Chelseas-MacBook-Air ghrsea10-sqool % .schema classes
+zsh: command not found: .schema
+chelseaschmidt@Chelseas-MacBook-Air ghrsea10-sqool % sqlite3 school.db 
+SQLite version 3.28.0 2019-04-15 14:49:49
+Enter ".help" for usage hints.
+sqlite> .schema classes
+CREATE TABLE classes (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  department INTEGER,
+  teacher INTEGER,
+  FOREIGN KEY(department) REFERENCES departments(id),
+  FOREIGN KEY(teacher) REFERENCES teachers(id)
+);
+sqlite> .schema departments
+CREATE TABLE departments (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+sqlite> .schema teachers
+CREATE TABLE teachers (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  department INTEGER,
+  FOREIGN KEY(department) REFERENCES departments(id)
+);
+sqlite> .table
+classes           departments       teachers        
+classes_students  students        
+sqlite> .schema classes
+CREATE TABLE classes (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  department INTEGER,
+  teacher INTEGER,
+  FOREIGN KEY(department) REFERENCES departments(id),
+  FOREIGN KEY(teacher) REFERENCES teachers(id)
+);
+sqlite> .schema departments
+CREATE TABLE departments (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+sqlite> .schema teachers
+CREATE TABLE teachers (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  department INTEGER,
+  FOREIGN KEY(department) REFERENCES departments(id)
+);
+sqlite> .schema classes
+CREATE TABLE classes (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  department INTEGER,
+  teacher INTEGER,
+  FOREIGN KEY(department) REFERENCES departments(id),
+  FOREIGN KEY(teacher) REFERENCES teachers(id)
+);
+sqlite> .table
+classes           departments       teachers        
+classes_students  students        
+sqlite> .schema classes_students
+CREATE TABLE classes_students (
+id integer primary key,
+classes_id integer,
+student_id integer,
+foreign key(classes_id) references classes(id),
+foreign key(student_id) references students(id)
+);
+sqlite> .schema students
+CREATE TABLE students (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+sqlite> .schema classes_students
+CREATE TABLE classes_students (
+id integer primary key,
+classes_id integer,
+student_id integer,
+foreign key(classes_id) references classes(id),
+foreign key(student_id) references students(id)
+);
+sqlite> .mode column;
+Error: mode should be one of: ascii column csv html insert line list quote tabs tcl
+sqlite> .mode column
+sqlite> .header on
+sqlite> SELECT name FROM students
+   ...> .schema students
+   ...> ;
+Error: no such table: students.schema
+sqlite> SELEC name FROM students;
+Error: near "SELEC": syntax error
+sqlite> SELECT name FROM students;
+name      
+----------
+lauren    
+dan       
+naomi     
+kim       
+sam       
+chris     
+sqlite> SELECT * FROM teachers;
+id          name        department
+----------  ----------  ----------
+1           fred        1         
+2           pamela      2         
+3           beth        1         
+4           sunny       2         
+sqlite> SELECT * FROM departments
+   ...> ;
+id          name      
+----------  ----------
+1           cs        
+2           psy       
+sqlite> SELECT teachers;
+Error: no such column: teachers
+sqlite> SELECT FROM teachers
+   ...> ;
+Error: near "FROM": syntax error
+sqlite> SELECT name FROM students
+   ...> WHERE name != 'naomi';
+name      
+----------
+lauren    
+dan       
+kim       
+sam       
+chris     
+sqlite> SELECT name, department FROM teachers
+   ...> WHERE id > 2 OR name = 'fred';
+name        department
+----------  ----------
+fred        1         
+beth        1         
+sunny       2         
+sqlite> SELECT name FROM classes
+   ...>   WHERE name LIKE '%m';
+sqlite> SELECT id, name FROM students
+   ...>   WHERE name LIKE '%m';
+id          name      
+----------  ----------
+4           kim       
+5           sam       
+sqlite> SELECT * FROM students
+   ...>   WHERE name NOT LIKE '%a%';
+id          name      
+----------  ----------
+4           kim       
+6           chris     
+sqlite> SELECT name FROM teachers
+   ...>   WHERE id NOT IN (1, 2, 4);
+name      
+----------
+beth      
+sqlite> SELECT * FROM teachers
+   ...> ;
+id          name        department
+----------  ----------  ----------
+1           fred        1         
+2           pamela      2         
+3           beth        1         
+4           sunny       2         
+sqlite> SELECT name FROM teachers
+   ...>   WEHRE department IN (1, 4);
+Error: near "department": syntax error
+sqlite> SELECT * FROM teachers
+   ...>   WHERE department IN (1, 4);
+id          name        department
+----------  ----------  ----------
+1           fred        1         
+3           beth        1         
+sqlite> SELECT * FROM teachers
+   ...> ;
+id          name        department
+----------  ----------  ----------
+1           fred        1         
+2           pamela      2         
+3           beth        1         
+4           sunny       2         
+sqlite> SELECT * FROM department;
+Error: no such table: department
+sqlite> SELECT * FROM departments;
+id          name      
+----------  ----------
+1           cs        
+2           psy       
+sqlite> SELECT name, id FROM teachers
+   ...>   WHERE department IN (SELECT id FROM departments
+   ...>                         WHERE name = 'psy';
+Error: near ";": syntax error
+sqlite> SELECT name, id FROM teachers
+   ...>   WHERE department IN (SELECT id FROM departments
+   ...>                         WHERE name = 'psy');
+name        id        
+----------  ----------
+pamela      2         
+sunny       4         
+sqlite> SELECT * FROM departments, classes;
+id          name        id          name        department  teacher   
+----------  ----------  ----------  ----------  ----------  ----------
+1           cs          1           javascript  1           1         
+1           cs          2           communicat  2           2         
+1           cs          3           node        1           3         
+1           cs          4           compromise  2           4         
+2           psy         1           javascript  1           1         
+2           psy         2           communicat  2           2         
+2           psy         3           node        1           3         
+2           psy         4           compromise  2           4         
+sqlite> SELECT * FROM teachers, departments
+   ...> ;
+id          name        department  id          name      
+----------  ----------  ----------  ----------  ----------
+1           fred        1           1           cs        
+1           fred        1           2           psy       
+2           pamela      2           1           cs        
+2           pamela      2           2           psy       
+3           beth        1           1           cs        
+3           beth        1           2           psy       
+4           sunny       2           1           cs        
+4           sunny       2           2           psy       
+sqlite> SELECT * FROM teachers, departments
+   ...>   WHERE departments.name = 'cs';
+id          name        department  id          name      
+----------  ----------  ----------  ----------  ----------
+1           fred        1           1           cs        
+2           pamela      2           1           cs        
+3           beth        1           1           cs        
+4           sunny       2           1           cs        
+sqlite> SELECT * FROM teachers, departments
+   ...>   WHERE departments.name = 'cs' AND teachers.department = department.id;
+Error: no such column: department.id
+sqlite> SELECT * FROM teachers, departments
+   ...>   WHERE departments.name = 'cs' AND teachers.department = departments.id;
+id          name        department  id          name      
+----------  ----------  ----------  ----------  ----------
+1           fred        1           1           cs        
+3           beth        1           1           cs        
+sqlite> SELECT teachers.name, teachers.id FROM teachers, departments
+   ...>   WHERE departments.name = 'psy' AND teachers.department = departments.id;
+name        id        
+----------  ----------
+pamela      2         
+sunny       4         
+sqlite> SELECT departments.name FROM teachers, departments
+   ...>   WHERE teachers.name = 'sunny' AND departments.id = teachers.id;
+sqlite> SELECT departments.name FROM departments, teachers
+   ...>   WHERE teachers.name = 'sunny';
+name      
+----------
+cs        
+psy       
+sqlite> SELECT departments.name FROM departments, teachers
+   ...>   WHERE teachers.name = 'sunny' AND teachers.department = departments.id;
+name      
+----------
+psy       
+sqlite> SELECT * FROM students, teachers;
+id          name        id          name        department
+----------  ----------  ----------  ----------  ----------
+1           lauren      1           fred        1         
+1           lauren      2           pamela      2         
+1           lauren      3           beth        1         
+1           lauren      4           sunny       2         
+2           dan         1           fred        1         
+2           dan         2           pamela      2         
+2           dan         3           beth        1         
+2           dan         4           sunny       2         
+3           naomi       1           fred        1         
+3           naomi       2           pamela      2         
+3           naomi       3           beth        1         
+3           naomi       4           sunny       2         
+4           kim         1           fred        1         
+4           kim         2           pamela      2         
+4           kim         3           beth        1         
+4           kim         4           sunny       2         
+5           sam         1           fred        1         
+5           sam         2           pamela      2         
+5           sam         3           beth        1         
+5           sam         4           sunny       2         
+6           chris       1           fred        1         
+6           chris       2           pamela      2         
+6           chris       3           beth        1         
+6           chris       4           sunny       2         
+sqlite> SELECT * FROM studnets INNER JOIN teachers;
+Error: no such table: studnets
+sqlite> SELECT * FROM students INNER JOIN teachers;
+id          name        id          name        department
+----------  ----------  ----------  ----------  ----------
+1           lauren      1           fred        1         
+1           lauren      2           pamela      2         
+1           lauren      3           beth        1         
+1           lauren      4           sunny       2         
+2           dan         1           fred        1         
+2           dan         2           pamela      2         
+2           dan         3           beth        1         
+2           dan         4           sunny       2         
+3           naomi       1           fred        1         
+3           naomi       2           pamela      2         
+3           naomi       3           beth        1         
+3           naomi       4           sunny       2         
+4           kim         1           fred        1         
+4           kim         2           pamela      2         
+4           kim         3           beth        1         
+4           kim         4           sunny       2         
+5           sam         1           fred        1         
+5           sam         2           pamela      2         
+5           sam         3           beth        1         
+5           sam         4           sunny       2         
+6           chris       1           fred        1         
+6           chris       2           pamela      2         
+6           chris       3           beth        1         
+6           chris       4           sunny       2         
+sqlite> SELECT name, id FROM teachers INNER JOIN departments
+   ...>   ON teachers.department = departments.id;
+Error: ambiguous column name: name
+sqlite> SELECT teachers.name, teachers.id FROM teachers INNER JOIN departments
+   ...>   ON teachers.department = departments.id;
+name        id        
+----------  ----------
+fred        1         
+pamela      2         
+beth        3         
+sunny       4         
+sqlite> SELECT teachers.name, teachers.id FROM teachers INNER JOIN departments
+   ...>   WHERE departments.name = 'cs'
+   ...>   ON teachers.department = departments.id;
+Error: near "ON": syntax error
+sqlite> SELECT teachers.name, teachers.id FROM teachers INNER JOIN departments
+   ...>   ON WHERE departments.name = 'cs' AND teachers.department = departments.id;
+Error: near "WHERE": syntax error
+sqlite> SELECT teachers.name, teachers.id FROM teachers INNER JOIN departments
+   ...>   ON departments.name = 'psy' AND teachers.department = departments.id;
+name        id        
+----------  ----------
+pamela      2         
+sunny       4         
+sqlite> SELECT department.name FROM departments INNER JOIN teachers
+   ...>   ON teachers.name = 'sunny';
+Error: no such column: department.name
+sqlite> SELECT departments.name FROM departments INNER JOIN teachers
+   ...>   ON teachers.name = 'sunny';
+name      
+----------
+cs        
+psy       
+sqlite> SELECT departments.name FROM departments INNER JOIN teachers
+   ...>   ON teachers.name = 'sunny' AND teachers.department = departments.id;
+name      
+----------
+psy       
+sqlite> SELECT teachers.name FROM teachers INNER JOIN departments
+   ...>   ON departments.name = 'cs' AND teachers.department = departments.id;
+name      
+----------
+fred      
+beth      
+sqlite> SELECT teachers.name FROM teachers LEFT OUTER JOIN departments
+   ...>   ON departments.name = 'cs' AND teachers.department = departments.id;
+name      
+----------
+fred      
+pamela    
+beth      
+sunny     
+sqlite> SELECT * FROM students_classes;
+Error: no such table: students_classes
+sqlite> SELECT * FROM classes_students;
+id          classes_id  student_id
+----------  ----------  ----------
+1           1           1         
+2           1           2         
+3           2           1         
+4           2           5         
+5           3           2         
+6           3           3         
+7           3           4         
+8           3           6         
+9           4           3         
+10          4           6         
+11          4           4         
+sqlite> SELECT classes_students.classes_id INNER JOIN
+   ...>   ON ;
+Error: near "INNER": syntax error
+sqlite> SELECT classes_students.classes_id FROM classes_students INNER JOIN
+   ...>   ON ;
+Error: near "ON": syntax error
+sqlite> SELECT classes.name FROM classes INNER JOIN
+   ...>   ON classes_students;
+Error: near "ON": syntax error
+sqlite> SELECT classes.name FROM classes INNER JOIN classes_students 
+   ...>   ON classes_students.student_id INNER JOIN students
+   ...>   ON students.name = 'sam' AND classes_students.student_id = students.id;
+name      
+----------
+javascript
+communicat
+node      
+compromise
+sqlite> SELECT name FROM students
+   ...>   WHERE name = 'sam';
+name      
+----------
+sam       
+sqlite> SELECT id FROM students
+   ...>   WHERE name = 'sam';
+id        
+----------
+5         
+sqlite> SELECT name FROM classes
+   ...>   WHERE id = 2;
+name         
+-------------
+communication
+sqlite> SELECT classes.name FROM classes INNER JOIN classes_students
+   ...>   ON classes.id = classes_student.student_id INNER JOIN
+   ...>   students ON
+   ...>     students.name = 'sam' AND classes_students.student_id = students.id;
+Error: no such column: classes_student.student_id
+sqlite> SELECT classes.name FROM classes INNER JOIN classes_students
+   ...>   ON classes.id = classes_students.student_id INNER JOIN students
+   ...>     ON students.name = 'sam' AND classes_students.student_id = students.id;
+sqlite> 
